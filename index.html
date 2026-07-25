@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgroStock® — Sistema de Gestión Agroquímica</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- ===================== LOGIN SCREEN ===================== -->
+    <div class="login-screen active" id="loginScreen">
+        <div class="login-bg"></div>
+        <div class="login-card">
+            <div class="login-brand">
+                <span class="logo-text">AgroStock</span><sup>®</sup>
+            </div>
+            <h1 class="login-title">Bienvenido de vuelta</h1>
+            <p class="login-subtitle">Cultiva tu inventario, cosecha tus ganancias</p>
+
+            <form id="formLogin" class="login-form">
+                <div class="form-group">
+                    <label>Usuario</label>
+                    <input type="text" id="loginUser" required autocomplete="username" placeholder="admin">
+                </div>
+                <div class="form-group">
+                    <label>Contraseña</label>
+                    <input type="password" id="loginPass" required autocomplete="current-password" placeholder="••••••••">
+                </div>
+                <div id="loginError" class="login-error"></div>
+                <button type="submit" class="btn-primary btn-full">
+                    Ingresar al sistema
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+                </button>
+            </form>
+
+            <div class="login-hint">
+                <span>Cuentas de prueba:</span>
+                <div class="hint-row"><strong>admin</strong> / admin123 — Administrador</div>
+                <div class="hint-row"><strong>vendedor</strong> / vendedor123 — Vendedor</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== APP CONTAINER ===================== -->
+    <div class="app-container" id="appContainer" style="display: none;">
+
+        <!-- Botón flotante para volver a mostrar el menú cuando está oculto -->
+        <button class="sidebar-reopen-btn" id="sidebarReopenBtn" onclick="toggleSidebar()" title="Mostrar menú">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+
+        <!-- ===================== SIDEBAR ===================== -->
+        <aside class="sidebar" id="sidebar">
+            <div class="logo-row">
+                <div class="logo">
+                    <svg class="logo-leaf" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 21c8 0 14-6 14-16-10 0-16 6-16 14 0 1 .05 1.4.2 2"/><path d="M5 21c2-4 5-8 12-13"/></svg>
+                    <span class="logo-text">AgroStock</span><sup>®</sup>
+                </div>
+                <button class="sidebar-toggle" onclick="toggleSidebar()" title="Ocultar menú">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 18l-6-6 6-6"/></svg>
+                </button>
+            </div>
+
+            <nav class="nav-menu">
+                <div class="nav-section">
+                    <span class="nav-label">General</span>
+                    <a href="#" class="nav-item active" data-view="dashboard" data-roles="Administrador,Vendedor">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+                        Dashboard
+                    </a>
+                    <a href="#" class="nav-item" data-view="inventario" data-roles="Administrador,Vendedor">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 7l9-4 9 4v10l-9 4-9-4V7z"/><path d="M3 7l9 4 9-4M12 11v10"/></svg>
+                        Inventario
+                    </a>
+                    <a href="#" class="nav-item" data-view="ingresos" data-roles="Administrador">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+                        Ingresos
+                    </a>
+                    <a href="#" class="nav-item" data-view="ventas" data-roles="Administrador,Vendedor">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-5"/></svg>
+                        Ventas
+                    </a>
+                    <a href="#" class="nav-item" data-view="flujocaja" data-roles="Administrador">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 6v0M18 18v0"/></svg>
+                        Flujo de Caja
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <span class="nav-label">Catálogo</span>
+                    <a href="#" class="nav-item" data-view="productos" data-roles="Administrador,Vendedor">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 7L12 3 4 7v10l8 4 8-4V7z"/><path d="M4 7l8 4 8-4M12 11v10"/></svg>
+                        Productos
+                    </a>
+                    <a href="#" class="nav-item" data-view="proveedores" data-roles="Administrador">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l4-5h10l4 5v11a1 1 0 01-1 1H4a1 1 0 01-1-1V9z"/><path d="M3 9h18M9 13a3 3 0 006 0"/></svg>
+                        Proveedores
+                    </a>
+                    <a href="#" class="nav-item" data-view="facturas" data-roles="Administrador">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 2h9l5 5v15a1 1 0 01-1 1H6a1 1 0 01-1-1V3a1 1 0 011-1z"/><path d="M15 2v5h5M9 13h6M9 17h6M9 9h2"/></svg>
+                        Facturas
+                    </a>
+                    <a href="#" class="nav-item" data-view="clientes" data-roles="Administrador,Vendedor">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2M16 3.13a4 4 0 010 7.75M21 21v-2a4 4 0 00-3-3.85"/></svg>
+                        Clientes
+                    </a>
+                    <a href="#" class="nav-item" data-view="mantenedores" data-roles="Administrador">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.59 13.41L13.42 20.58a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><circle cx="7" cy="7" r="1.3" fill="currentColor" stroke="none"/></svg>
+                        Categorías y Unidades
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <span class="nav-label">Sistema</span>
+                    <a href="#" class="nav-item" data-view="usuarios" data-roles="Administrador">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+                        Usuarios
+                    </a>
+                    <a href="#" class="nav-item" data-view="configuracion" data-roles="Administrador">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+                        Configuración
+                    </a>
+                </div>
+            </nav>
+
+            <div class="user-card">
+                <div class="user-avatar" id="userAvatar">JM</div>
+                <div class="user-info">
+                    <span class="user-name" id="userName">José Mendoza</span>
+                    <span class="user-role" id="userRole">Administrador</span>
+                </div>
+                <button class="logout-btn" onclick="logout()" title="Cerrar sesión">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+                </button>
+            </div>
+        </aside>
+
+        <!-- ===================== MAIN ===================== -->
+        <main class="main-content">
+
+            <!-- ============== TOPBAR ============== -->
+            <header class="topbar">
+                <div class="topbar-left">
+                    <h1 class="page-title" id="pageTitle">Dashboard</h1>
+                    <p class="page-subtitle" id="pageSubtitle">Resumen general de tu negocio agrícola</p>
+                </div>
+                <div class="topbar-right">
+                    <div class="search-bar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+                        <input type="text" placeholder="Buscar producto, cliente..." id="globalSearch">
+                    </div>
+                    <button class="btn-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>
+                        <span class="badge-dot"></span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- ============== VIEW: DASHBOARD ============== -->
+            <section class="view active" id="view-dashboard">
+
+                <!-- HERO CARD -->
+                <div class="hero-card">
+                    <div class="hero-text">
+                        <span class="hero-label">01 — TU NEGOCIO</span>
+                        <h2 class="hero-title">Cultiva tu inventario,<br>cosecha tus ganancias</h2>
+                        <p class="hero-desc">Gestiona el stock de tus agroquímicos, registra ventas y mantén el control de tu negocio en un solo lugar. Decisiones inteligentes, resultados sostenibles.</p>
+                        <button class="btn-primary" onclick="openModal('modalVenta')">
+                            Registrar Venta
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+                        </button>
+                    </div>
+                    <div class="hero-image">
+                        <div class="hero-badge">
+                            <div class="hero-badge-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 21c8 0 14-6 14-16-10 0-16 6-16 14 0 1 .05 1.4.2 2"/><path d="M5 21c2-4 5-8 12-13"/></svg>
+                            </div>
+                            <div class="hero-badge-text">
+                                <strong>Cosecha digital</strong>
+                                <span>Todo tu negocio, en orden</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STATS GRID -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon stat-icon--green">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 7L12 3 4 7v10l8 4 8-4V7z"/><path d="M4 7l8 4 8-4M12 11v10"/></svg>
+                        </div>
+                        <span class="stat-label">Productos en stock</span>
+                        <span class="stat-value" id="statProductos">0</span>
+                        <span class="stat-trend stat-trend--up">↑ 12% este mes</span>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon stat-icon--dark">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+                        </div>
+                        <span class="stat-label">Ventas del mes</span>
+                        <span class="stat-value" id="statIngresos">S/ 0</span>
+                        <span class="stat-trend stat-trend--up">↑ 23% vs mes pasado</span>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon stat-icon--green">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-5"/></svg>
+                        </div>
+                        <span class="stat-label">Boletas emitidas</span>
+                        <span class="stat-value" id="statVentas">0</span>
+                        <span class="stat-trend stat-trend--up">↑ 8 esta semana</span>
+                    </div>
+
+                    <div class="stat-card stat-card--alert" onclick="openModal('modalStockBajo')" title="Ver productos con stock bajo">
+                        <div class="stat-icon stat-icon--alert">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0zM12 9v4M12 17h.01"/></svg>
+                        </div>
+                        <span class="stat-label">Stock bajo</span>
+                        <span class="stat-value" id="statBajoStock">0</span>
+                        <span class="stat-trend stat-trend--alert">Requieren atención</span>
+                    </div>
+
+                    <div class="stat-card stat-card--alert" onclick="openModal('modalPorVencer')" title="Ver lotes por vencer">
+                        <div class="stat-icon stat-icon--alert">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+                        </div>
+                        <span class="stat-label">Por vencer</span>
+                        <span class="stat-value" id="statPorVencer">0</span>
+                        <span class="stat-trend stat-trend--alert">Próximos 90 días</span>
+                    </div>
+
+                    <div class="stat-card stat-card--alert" onclick="openModal('modalLetrasPorVencer')" title="Ver letras por vencer">
+                        <div class="stat-icon stat-icon--alert">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M6 15h4"/></svg>
+                        </div>
+                        <span class="stat-label">Letras por vencer</span>
+                        <span class="stat-value" id="statLetrasPorVencer">0</span>
+                        <span class="stat-trend stat-trend--alert">Pagos al banco</span>
+                    </div>
+
+                    <div class="stat-card stat-card--alert" onclick="openModal('modalCobranzasPorVencer')" title="Ver cobranzas a clientes por vencer">
+                        <div class="stat-icon stat-icon--alert">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/><path d="M17 8l3 3 5-5"/></svg>
+                        </div>
+                        <span class="stat-label">Cobranzas por vencer</span>
+                        <span class="stat-value" id="statCobranzasPorVencer">0</span>
+                        <span class="stat-trend stat-trend--alert">Clientes a crédito</span>
+                    </div>
+                </div>
+
+                <!-- ============== GRÁFICOS ============== -->
+                <div class="charts-grid">
+                    <div class="chart-card chart-card--big">
+                        <div class="chart-header">
+                            <span class="hero-label">VENTAS MENSUALES</span>
+                            <h3 class="chart-title">Evolución de ingresos por mes</h3>
+                        </div>
+                        <div class="chart-canvas-wrap">
+                            <canvas id="chartVentas"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <span class="hero-label">CATEGORÍAS</span>
+                            <h3 class="chart-title">Distribución por tipo</h3>
+                        </div>
+                        <div class="chart-canvas-wrap">
+                            <canvas id="chartCategorias"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <span class="hero-label">TOP PRODUCTOS</span>
+                            <h3 class="chart-title">Más vendidos del año</h3>
+                        </div>
+                        <div class="chart-canvas-wrap">
+                            <canvas id="chartTopProductos"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-card chart-card--big">
+                        <div class="chart-header">
+                            <span class="hero-label">02 — MOVIMIENTOS RECIENTES</span>
+                            <h3 class="chart-title">Actividad de tu inventario</h3>
+                        </div>
+                        <div class="movements-list" id="movementsList"></div>
+                    </div>
+                </div>
+
+                <!-- LOW STOCK ALERT -->
+                <div class="alerts-section">
+                    <h3 class="section-title">Productos con stock bajo</h3>
+                    <div class="alerts-grid" id="alertsGrid"></div>
+                </div>
+
+            </section>
+
+            <!-- ============== VIEW: INVENTARIO ============== -->
+            <section class="view" id="view-inventario">
+                <div class="view-header">
+                    <div>
+                        <span class="hero-label">INVENTARIO</span>
+                        <h2 class="view-title">Stock de productos</h2>
+                    </div>
+                    <div class="view-actions">
+                        <div class="search-bar">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+                            <input type="text" placeholder="Buscar por nombre o código..." id="invSearch">
+                        </div>
+                        <select id="filterCategoria" class="select-input">
+                            <option value="">Todas las categorías</option>
+                        </select>
+                        <button class="btn-primary" onclick="openModal('modalProducto')" data-roles="Administrador">
+                            + Nuevo Producto
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Categoría</th>
+                                <th>Stock</th>
+                                <th>Precio Venta</th>
+                                <th>Proveedor</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventarioTable"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ============== VIEW: INGRESOS ============== -->
+            <section class="view" id="view-ingresos">
+                <div class="view-header">
+                    <div>
+                        <span class="hero-label">INGRESOS</span>
+                        <h2 class="view-title">Compras y reposición de stock</h2>
+                    </div>
+                    <div class="view-actions">
+                        <div class="search-bar">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+                            <input type="text" placeholder="Buscar por N° de factura, lote o producto..." id="ingSearch">
+                        </div>
+                        <button class="btn-primary" onclick="openModal('modalIngreso')">+ Registrar Ingreso</button>
+                    </div>
+                </div>
+                <div class="table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Producto</th>
+                                <th>Lote</th>
+                                <th>Vence</th>
+                                <th>Cantidad</th>
+                                <th>Costo Unit.</th>
+                                <th>Total</th>
+                                <th>Proveedor</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ingresosTable"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ============== VIEW: VENTAS ============== -->
+            <section class="view" id="view-ventas">
+                <div class="view-header">
+                    <div>
+                        <span class="hero-label">VENTAS</span>
+                        <h2 class="view-title">Resumen y registro de ventas</h2>
+                    </div>
+                    <button class="btn-primary" onclick="openModal('modalVenta')">+ Registrar Venta</button>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-label">Total facturado</span>
+                        <span class="stat-value" id="ventasTotal">S/ 0</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Ticket promedio</span>
+                        <span class="stat-value" id="ventasPromedio">S/ 0</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Producto top</span>
+                        <span class="stat-value" id="ventasTop" style="font-size: 1.5rem;">—</span>
+                    </div>
+                </div>
+                <div class="table-wrapper" style="margin-top: 2rem;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Boleta</th>
+                                <th>Fecha</th>
+                                <th>Cliente</th>
+                                <th>Producto</th>
+                                <th>Cantidad</th>
+                                <th>Total</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ventasTable"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ============== VIEW: FLUJO DE CAJA ============== -->
+            <section class="view" id="view-flujocaja">
+                <div class="view-header">
+                    <div>
+                        <span class="hero-label">FINANZAS</span>
+                        <h2 class="view-title">Flujo de caja</h2>
+                    </div>
+                    <div class="view-actions">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label style="font-size: 0.7rem;">Desde</label>
+                            <input type="date" id="cajaDesde" class="select-input">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label style="font-size: 0.7rem;">Hasta</label>
+                            <input type="date" id="cajaHasta" class="select-input">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon stat-icon--green">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+                        </div>
+                        <span class="stat-label">Entradas del período</span>
+                        <span class="stat-value" id="cajaEntradas">S/ 0</span>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon stat-icon--dark">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+                        </div>
+                        <span class="stat-label">Salidas del período</span>
+                        <span class="stat-value" id="cajaSalidas">S/ 0</span>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon stat-icon--green">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/></svg>
+                        </div>
+                        <span class="stat-label">Saldo del período</span>
+                        <span class="stat-value" id="cajaSaldo">S/ 0</span>
+                    </div>
+                </div>
+
+                <div class="charts-grid">
+                    <div class="chart-card chart-card--big">
+                        <div class="chart-header">
+                            <span class="hero-label">ÚLTIMOS 6 MESES</span>
+                            <h3 class="chart-title">Entradas vs. Salidas por mes</h3>
+                        </div>
+                        <div class="chart-canvas-wrap">
+                            <canvas id="chartFlujoCaja"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-wrapper" style="margin-top: 2rem;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Tipo</th>
+                                <th>Concepto</th>
+                                <th>Monto</th>
+                                <th>Saldo acumulado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="flujoCajaTable"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ============== VIEW: PRODUCTOS ============== -->
+            <section class="view" id="view-productos">
+                <div class="view-header">
+                    <div>
+                        <span class="hero-label">CATÁLOGO</span>
+                        <h2 class="view-title">Productos disponibles</h2>
+                    </div>
+                </div>
+                <div class="products-grid" id="productosGrid"></div>
+            </section>
+
+            <!-- ============== VIEW: PROVEEDORES ============== -->
+            <section class="view" id="view-proveedores">
+                <div class="view-header">
+                    <div>
+                        <span class="hero-label">PROVEEDORES</span>
+                        <h2 class="view-title">Tus aliados comerciales</h2>
+                    </div>
+                    <button class="btn-primary" onclick="openModal('modalProveedor')">+ Nuevo Proveedor</button>
+                </div>
+                <div class="cards-grid" id="proveedoresGrid"></div>
+            </section>
+
+            <!-- ============== VIEW: FACTURAS ============== -->
+            <section class="view" id="view-facturas">
+                <div class="view-header">
+                    <div>
+                        <span class="hero-label">CUENTAS POR PAGAR</span>
+                        <h2 class="view-title">Facturas de proveedores</h2>
+                    </div>
+                    <button class="btn-primary" onclick="openModal('modalFactura')">+ Nueva Factura</button>
+                </div>
+                <div class="cards-grid" id="facturasGrid"></div>
+            </section>
+
+            <!-- ============== VIEW: CLIENTES ============== -->
+            <section class="view" id="view-clientes">
+                <div class="view-header">
+                    <div>
+                        <span class="hero-label">CLIENTES</span>
+                        <h2 class="view-title">Cartera de clientes</h2>
+                    </div>
+                    <button class="btn-primary" onclick="openModal('modalCliente')">+ Nuevo Cliente</button>
+                </div>
+                <div class="cards-grid" id="clientesGrid"></div>
+            </section>
+
+            <!-- ============== VIEW: MANTENEDORES (Categorías y Unidades) ============== -->
+            <section class="view" id="view-mantenedores">
+                <div class="view-header">
+                    <div>
+                        <span class="hero-label">CATÁLOGO</span>
+                        <h2 class="view-title">Categorías y unidades de medida</h2>
+                    </div>
+                </div>
+
+                <div class="config-grid">
+                    <div class="config-card">
+                        <div class="maint-card-header">
+                            <h3 class="config-card-title">Categorías de producto</h3>
+                            <button class="btn-small" onclick="openModal('modalCategoria')">+ Nueva</button>
+                        </div>
+                        <p class="config-card-desc">Los tipos de agroquímico que maneja tu negocio (herbicida, insecticida, etc). Se usan al registrar productos.</p>
+                        <div class="maint-list" id="categoriasList"></div>
+                    </div>
+
+                    <div class="config-card">
+                        <div class="maint-card-header">
+                            <h3 class="config-card-title">Unidades de medida</h3>
+                            <button class="btn-small" onclick="openModal('modalUnidad')">+ Nueva</button>
+                        </div>
+                        <p class="config-card-desc">Cómo se mide el stock de tus productos (litros, kilogramos, unidades, etc).</p>
+                        <div class="maint-list" id="unidadesList"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============== VIEW: USUARIOS ============== -->
+            <section class="view" id="view-usuarios">
+                <div class="view-header">
+                    <div>
+                        <span class="hero-label">SISTEMA</span>
+                        <h2 class="view-title">Usuarios del sistema</h2>
+                    </div>
+                    <button class="btn-primary" onclick="openModal('modalUsuario')">+ Nuevo Usuario</button>
+                </div>
+                <div class="cards-grid" id="usuariosGrid"></div>
+            </section>
+
+            <!-- ============== VIEW: CONFIGURACIÓN ============== -->
+            <section class="view" id="view-configuracion">
+                <div class="view-header">
+                    <div>
+                        <span class="hero-label">SISTEMA</span>
+                        <h2 class="view-title">Configuración y respaldos</h2>
+                    </div>
+                </div>
+
+                <!-- Banner importante -->
+                <div class="config-banner">
+                    <div class="config-banner-icon">!</div>
+                    <div class="config-banner-text">
+                        <strong>Importante: Sus datos viven en este navegador</strong>
+                        Esta es una versión inicial. Sus datos (productos, ventas, clientes, etc.) se guardan
+                        en este navegador y en esta computadora. <strong>Si limpia el caché del navegador,
+                        cambia de PC o usa modo incógnito, se perderán.</strong>
+                        <br><br>
+                        <em>Recomendación:</em> Descargue un respaldo periódicamente (al menos una vez por día)
+                        usando el botón "Exportar respaldo". En la siguiente fase del sistema migraremos a una
+                        base de datos en la nube y este problema desaparece.
+                    </div>
+                </div>
+
+                <!-- Estadísticas del storage -->
+                <div class="config-grid">
+                    <div class="config-card">
+                        <h3 class="config-card-title">Datos almacenados</h3>
+                        <div class="config-stats" id="storageStats">
+                            <!-- se rellena por JS -->
+                        </div>
+                    </div>
+
+                    <div class="config-card">
+                        <h3 class="config-card-title">Acciones de respaldo</h3>
+                        <p class="config-card-desc">Descargue un archivo .json con todos sus datos.
+                        Puede subirlo más tarde para restaurar.</p>
+                        <div class="config-actions">
+                            <button class="btn-primary" onclick="handleExport()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                                Exportar respaldo
+                            </button>
+                            <label class="btn-outline" for="fileImport" style="cursor:pointer;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+                                Importar respaldo
+                            </label>
+                            <input type="file" id="fileImport" accept=".json" style="display:none" onchange="handleImport(event)">
+                        </div>
+                    </div>
+
+                    <div class="config-card config-card--danger">
+                        <h3 class="config-card-title" style="color: var(--accent-red);">Zona de peligro</h3>
+                        <p class="config-card-desc">Estas acciones no se pueden deshacer. Asegúrese de tener un respaldo.</p>
+                        <div class="config-actions">
+                            <button class="btn-outline-danger" onclick="handleResetDemo()">
+                                Restablecer datos de demostración
+                            </button>
+                            <button class="btn-outline-danger" onclick="handleEmptyAll()">
+                                Vaciar todo (empezar desde cero)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- ===================== MODAL: NUEVO/EDITAR PRODUCTO ===================== -->
+    <div class="modal-overlay" id="modalProducto">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modalProductoTitle">Nuevo Producto</h3>
+                <button class="modal-close" onclick="closeModal('modalProducto')">×</button>
+            </div>
+            <form id="formProducto" class="modal-body">
+                <input type="hidden" id="prodId">
+                <div class="form-group">
+                    <label>Nombre del producto</label>
+                    <input type="text" id="prodNombre" required placeholder="Ej: Glifosato 48%">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Categoría</label>
+                        <select id="prodCategoria" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Unidad</label>
+                        <select id="prodUnidad" required></select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Precio costo (S/)</label>
+                        <input type="number" id="prodCosto" required step="0.01" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Precio venta (S/)</label>
+                        <input type="number" id="prodPrecio" required step="0.01" min="0">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Stock inicial</label>
+                        <input type="number" id="prodStock" required min="0" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Stock mínimo</label>
+                        <input type="number" id="prodStockMin" required min="0" value="10">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Proveedor</label>
+                    <select id="prodProveedor" required></select>
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" id="prodAplicaIgv" checked>
+                    <label for="prodAplicaIgv">Este producto aplica IGV (18%)</label>
+                </div>
+                <button type="submit" class="btn-primary btn-full">Guardar Producto</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===================== MODAL: INGRESO ===================== -->
+    <div class="modal-overlay" id="modalIngreso">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modalIngresoTitle">Registrar Ingreso</h3>
+                <button class="modal-close" onclick="closeModal('modalIngreso')">×</button>
+            </div>
+            <form id="formIngreso" class="modal-body">
+                <input type="hidden" id="ingId">
+                <div class="form-group">
+                    <label>Producto</label>
+                    <select id="ingProducto" required></select>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Número de lote</label>
+                        <input type="text" id="ingLote" required placeholder="Ej: L-2307A">
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha de vencimiento</label>
+                        <input type="date" id="ingVencimiento" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Cantidad</label>
+                        <input type="number" id="ingCantidad" required min="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Costo unitario (S/)</label>
+                        <input type="number" id="ingCosto" required step="0.01" min="0">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Proveedor</label>
+                    <select id="ingProveedor" required></select>
+                </div>
+                <div class="form-group">
+                    <label>Número de factura (opcional)</label>
+                    <input type="text" id="ingFactura" list="facturasDatalist" placeholder="Elija una factura existente o escriba una nueva" autocomplete="off">
+                    <datalist id="facturasDatalist"></datalist>
+                </div>
+                <button type="submit" class="btn-primary btn-full">Confirmar Ingreso</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===================== MODAL: VENTA ===================== -->
+    <div class="modal-overlay" id="modalVenta">
+        <div class="modal modal-venta">
+            <div class="modal-header">
+                <h3>Registrar Venta</h3>
+                <button class="modal-close" onclick="closeModal('modalVenta')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Cliente</label>
+                    <select id="venCliente" required></select>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Forma de pago</label>
+                        <select id="venFormaPago" onchange="toggleCampoCredito()">
+                            <option value="Contado">Contado</option>
+                            <option value="Crédito">Crédito</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="venFechaCreditoWrap" style="display:none;">
+                        <label>Fecha de pago acordada</label>
+                        <input type="date" id="venFechaPagoAcordada">
+                    </div>
+                </div>
+
+                <div class="venta-add-row">
+                    <div class="form-group" style="flex: 2;">
+                        <label>Producto</label>
+                        <select id="venProductoSel"></select>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label>Cantidad</label>
+                        <input type="number" id="venCantidadSel" min="1" value="1">
+                    </div>
+                    <button type="button" class="btn-outline venta-add-btn" onclick="agregarProductoVenta()">+ Agregar</button>
+                </div>
+
+                <div class="venta-cart-wrapper">
+                    <table class="venta-cart-table">
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Cant.</th>
+                                <th>Subtotal</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="ventaCartBody">
+                            <tr><td colspan="4" class="empty-state">Aún no ha agregado productos</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="venta-resumen" id="ventaResumen"></div>
+
+                <button type="button" class="btn-primary btn-full" onclick="confirmarVentaMultiple()">Confirmar Venta</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== MODAL: NUEVO/EDITAR CLIENTE ===================== -->
+    <div class="modal-overlay" id="modalCliente">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modalClienteTitle">Nuevo Cliente</h3>
+                <button class="modal-close" onclick="closeModal('modalCliente')">×</button>
+            </div>
+            <form id="formCliente" class="modal-body">
+                <input type="hidden" id="cliId">
+                <div class="form-group">
+                    <label>Razón social / Nombre</label>
+                    <input type="text" id="cliNombre" required placeholder="Ej: Fundo San Lorenzo">
+                </div>
+                <div class="form-group">
+                    <label>Dirección</label>
+                    <input type="text" id="cliDireccion" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>RUC / DNI</label>
+                        <input type="text" id="cliDocumento" required placeholder="20111222333">
+                    </div>
+                    <div class="form-group">
+                        <label>Tipo</label>
+                        <select id="cliTipo" required>
+                            <option value="Empresa">Empresa</option>
+                            <option value="Particular">Particular</option>
+                            <option value="Cooperativa">Cooperativa</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Persona de contacto</label>
+                    <input type="text" id="cliContacto" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Teléfono</label>
+                        <input type="text" id="cliTelefono" required placeholder="+51 944 888 222">
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="cliEmail" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary btn-full">Guardar Cliente</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===================== MODAL: NUEVO/EDITAR PROVEEDOR ===================== -->
+    <div class="modal-overlay" id="modalProveedor">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modalProveedorTitle">Nuevo Proveedor</h3>
+                <button class="modal-close" onclick="closeModal('modalProveedor')">×</button>
+            </div>
+            <form id="formProveedor" class="modal-body">
+                <input type="hidden" id="provId">
+                <div class="form-group">
+                    <label>Razón social</label>
+                    <input type="text" id="provNombre" required>
+                </div>
+                <div class="form-group">
+                    <label>Persona de contacto</label>
+                    <input type="text" id="provContacto" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Teléfono</label>
+                        <input type="text" id="provTelefono" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="provEmail" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Dirección</label>
+                    <input type="text" id="provDireccion" required>
+                </div>
+                <button type="submit" class="btn-primary btn-full">Guardar Proveedor</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===================== MODAL: NUEVO/EDITAR USUARIO ===================== -->
+    <div class="modal-overlay" id="modalUsuario">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modalUsuarioTitle">Nuevo Usuario</h3>
+                <button class="modal-close" onclick="closeModal('modalUsuario')">×</button>
+            </div>
+            <form id="formUsuario" class="modal-body">
+                <input type="hidden" id="usrId">
+                <div class="form-group">
+                    <label>Nombre completo</label>
+                    <input type="text" id="usrNombre" required placeholder="Ej: José Mendoza">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Usuario (para iniciar sesión)</label>
+                        <input type="text" id="usrUsuario" required placeholder="Ej: jmendoza" autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label>Rol</label>
+                        <select id="usrRol" required>
+                            <option value="Administrador">Administrador</option>
+                            <option value="Vendedor">Vendedor</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Contraseña</label>
+                    <input type="text" id="usrPassword" placeholder="Dejar en blanco para no cambiarla" autocomplete="new-password">
+                </div>
+                <button type="submit" class="btn-primary btn-full">Guardar Usuario</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===================== MODAL: NUEVA FACTURA ===================== -->
+    <div class="modal-overlay" id="modalFactura">
+        <div class="modal modal-venta">
+            <div class="modal-header">
+                <h3>Nueva Factura</h3>
+                <button class="modal-close" onclick="closeModal('modalFactura')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Número de factura</label>
+                        <input type="text" id="facNumero" list="facNumeroDatalist" required placeholder="Ej: F001-2288" autocomplete="off">
+                        <datalist id="facNumeroDatalist"></datalist>
+                    </div>
+                    <div class="form-group">
+                        <label>Proveedor</label>
+                        <select id="facProveedor" required></select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Fecha de factura</label>
+                        <input type="date" id="facFecha" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Monto total (S/)</label>
+                        <input type="number" id="facMonto" required step="0.01" min="0">
+                    </div>
+                </div>
+                <div class="venta-add-row">
+                    <div class="form-group" style="flex: 2;">
+                        <label>¿En cuántas letras se paga?</label>
+                        <input type="number" id="facNumLetras" min="1" value="1">
+                    </div>
+                    <button type="button" class="btn-outline venta-add-btn" onclick="generarLetras()">Generar letras</button>
+                </div>
+
+                <div class="venta-cart-wrapper" id="facLetrasWrapper" style="display:none;">
+                    <table class="venta-cart-table">
+                        <thead>
+                            <tr>
+                                <th>Letra</th>
+                                <th>Monto (S/)</th>
+                                <th>Vencimiento</th>
+                            </tr>
+                        </thead>
+                        <tbody id="facLetrasBody"></tbody>
+                    </table>
+                </div>
+
+                <button type="button" class="btn-primary btn-full" onclick="guardarFactura()">Guardar Factura</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== MODAL: DETALLE DE FACTURA ===================== -->
+    <div class="modal-overlay" id="modalDetalleFactura">
+        <div class="modal modal-stock-bajo">
+            <div class="modal-header">
+                <h3 id="modalDetalleFacturaTitle">Detalle de factura</h3>
+                <button class="modal-close" onclick="closeModal('modalDetalleFactura')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="stock-bajo-list" id="detalleFacturaList"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== MODAL: GESTIONAR PAGO (venta a crédito) ===================== -->
+    <div class="modal-overlay" id="modalGestionPago">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modalGestionPagoTitle">Gestionar pago</h3>
+                <button class="modal-close" onclick="closeModal('modalGestionPago')">×</button>
+            </div>
+            <div class="modal-body" id="gestionPagoContent">
+                <!-- Se rellena por JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== MODAL: COBRANZAS POR VENCER ===================== -->
+    <div class="modal-overlay" id="modalCobranzasPorVencer">
+        <div class="modal modal-stock-bajo">
+            <div class="modal-header">
+                <h3>Cobranzas por vencer</h3>
+                <button class="modal-close" onclick="closeModal('modalCobranzasPorVencer')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="stock-bajo-list" id="cobranzasPorVencerList"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== MODAL: LETRAS POR VENCER ===================== -->
+    <div class="modal-overlay" id="modalLetrasPorVencer">
+        <div class="modal modal-stock-bajo">
+            <div class="modal-header">
+                <h3>Letras por vencer</h3>
+                <button class="modal-close" onclick="closeModal('modalLetrasPorVencer')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="stock-bajo-list" id="letrasPorVencerList"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== MODAL: VER INGRESO (solo lectura) ===================== -->
+    <div class="modal-overlay" id="modalVerIngreso">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Detalle del ingreso</h3>
+                <button class="modal-close" onclick="closeModal('modalVerIngreso')">×</button>
+            </div>
+            <div class="modal-body" id="verIngresoContent">
+                <!-- Se rellena por JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== MODAL: VER PRODUCTO (solo lectura) ===================== -->
+    <div class="modal-overlay" id="modalVerProducto">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Detalle del producto</h3>
+                <button class="modal-close" onclick="closeModal('modalVerProducto')">×</button>
+            </div>
+            <div class="modal-body" id="verProductoContent">
+                <!-- Se rellena por JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== MODAL: STOCK BAJO ===================== -->
+    <div class="modal-overlay" id="modalStockBajo">
+        <div class="modal modal-stock-bajo">
+            <div class="modal-header">
+                <h3>Productos con stock bajo</h3>
+                <button class="modal-close" onclick="closeModal('modalStockBajo')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="stock-bajo-list" id="stockBajoList"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== MODAL: LOTES POR VENCER ===================== -->
+    <div class="modal-overlay" id="modalPorVencer">
+        <div class="modal modal-stock-bajo">
+            <div class="modal-header">
+                <h3>Lotes por vencer</h3>
+                <button class="modal-close" onclick="closeModal('modalPorVencer')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="stock-bajo-list" id="porVencerList"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== MODAL: NUEVA/EDITAR CATEGORÍA ===================== -->
+    <div class="modal-overlay" id="modalCategoria">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modalCategoriaTitle">Nueva Categoría</h3>
+                <button class="modal-close" onclick="closeModal('modalCategoria')">×</button>
+            </div>
+            <form id="formCategoria" class="modal-body">
+                <input type="hidden" id="catId">
+                <div class="form-group">
+                    <label>Nombre de la categoría</label>
+                    <input type="text" id="catNombre" required placeholder="Ej: Bioestimulante">
+                </div>
+                <button type="submit" class="btn-primary btn-full">Guardar Categoría</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===================== MODAL: NUEVA/EDITAR UNIDAD ===================== -->
+    <div class="modal-overlay" id="modalUnidad">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modalUnidadTitle">Nueva Unidad</h3>
+                <button class="modal-close" onclick="closeModal('modalUnidad')">×</button>
+            </div>
+            <form id="formUnidad" class="modal-body">
+                <input type="hidden" id="uniId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Código corto</label>
+                        <input type="text" id="uniCodigo" required maxlength="8" placeholder="Ej: gal">
+                    </div>
+                    <div class="form-group">
+                        <label>Nombre completo</label>
+                        <input type="text" id="uniNombre" required placeholder="Ej: Galón">
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary btn-full">Guardar Unidad</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===================== MODAL: BOLETA ===================== -->
+    <div class="modal-overlay" id="modalBoleta">
+        <div class="modal modal-boleta">
+            <div class="modal-header no-print">
+                <h3>Nota de Venta</h3>
+                <button class="modal-close" onclick="closeModal('modalBoleta')">×</button>
+            </div>
+            <div class="boleta-content" id="boletaContent">
+                <!-- Se rellena por JS -->
+            </div>
+            <div class="modal-actions no-print">
+                <button class="btn-outline" onclick="closeModal('modalBoleta')">Cerrar</button>
+                <button class="btn-primary" onclick="window.print()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z"/></svg>
+                    Imprimir / Guardar PDF
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== MODAL: CONFIRMACIÓN ===================== -->
+    <div class="modal-overlay" id="modalConfirm">
+        <div class="modal modal-confirm">
+            <div class="confirm-icon-wrap">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                    <path d="M12 3c-4.2 0-7.5 3.4-7.5 7.8 0 4.2 3.1 7.6 7.5 9.7 4.4-2.1 7.5-5.5 7.5-9.7C19.5 6.4 16.2 3 12 3z"/>
+                    <path d="M12 5.5v14.5"/>
+                    <path d="M8 10.5c1.6.9 2.6 1.9 4 2M16 10.5c-1.6.9-2.6 1.9-4 2"/>
+                </svg>
+            </div>
+            <h3 class="confirm-title" id="confirmTitle">¿Eliminar este elemento?</h3>
+            <p class="confirm-message" id="confirmMessage">Esta acción no se puede deshacer.</p>
+            <div class="confirm-actions">
+                <button type="button" class="btn-outline" onclick="resolveConfirm(false)">Cancelar</button>
+                <button type="button" class="btn-confirm-danger" id="confirmBtnYes" onclick="resolveConfirm(true)">Sí, eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== TOAST ===================== -->
+    <div class="toast" id="toast"></div>
+
+    <script src="data.js"></script>
+    <script src="storage.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
